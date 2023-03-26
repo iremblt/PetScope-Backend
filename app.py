@@ -21,6 +21,54 @@ def home():
 
 @app.route('/Pet/List', methods=(['GET']))
 def petList():
+    try:
+        if(getattr(request, 'json', None)):
+            # if(getattr(getattr(request, 'json', None), 'pet_name', None)):
+            #     print(request.json['pet_name'])
+            try:
+                if(request.json['date_time']):  
+                    petList = petServices.getPetListWithParams(params={
+                        'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                        'date_time': request.json['date_time']
+                        })
+                    return petList
+            except:
+                try:
+                    if(request.json['pet_name']):  
+                        petList = petServices.getPetListWithParams(params={
+                            'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                            'pet_name': request.json['pet_name']
+                            })
+                        return petList
+                except:
+                    try:
+                        if(request.json['record_type']):
+                            print('here')
+                            petList = petServices.getPetListWithParams(params={
+                                'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                                'record_type': request.json['record_type']
+                                })
+                            return petList
+                    except:
+                        try:
+                            if(request.json['pet_breed']):  
+                                petList = petServices.getPetListWithParams(params={
+                                    'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                                    'pet_breed': request.json['pet_breed']
+                                    })
+                                return petList
+                        except:
+                            petList = petServices.getPetListWithParams(params={
+                                'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage']
+                                })
+                            return petList
+    except:
+        petList = petServices.getPetList()
+        return petList
+
+@app.route('/Pet/List', methods=(['GET']))
+def petListWithSearchByName():
+    print(request.json['pet_name'])
     petList = petServices.getPetList()
     return petList
 

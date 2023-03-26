@@ -17,6 +17,45 @@ class PetsCRUD():
         else:
             results = __self__.pet_schamas.dump(pet_list)
             return  jsonify(results)
+        
+    def getPetListWithParams(__self__,params):
+        pet_list = __self__.dbSession.query(Pets).all()
+        if len(pet_list) == 0 :
+            message = 'There is no lost or found pet yet.'
+            return jsonify({'message':message,'status':'404 NOT FOUND'})
+        else:
+            try: ## eğer page 1 se offset 0, 2 ise offset perPage(20), 3 ise offset 2*perPage
+                    offset = params['PerPage'] * (params['PageSize'] - 1)
+                    petListWithPagination =__self__.dbSession.query(Pets).order_by('pet_id').offset(offset).limit(params['PerPage']).all()
+                    try:
+                        if(params['date_time']):
+                            petListWithPagination =__self__.dbSession.query(Pets).order_by('date_time').offset(offset).limit(params['PerPage']).all()
+                            results = __self__.pet_schamas.dump(petListWithPagination)
+                            return jsonify(results)
+                    except:
+                        try:
+                            if(params['pet_name']): #pagination ile oluyor searchs
+                                petListWithPagination =__self__.dbSession.query(Pets).filter_by(pet_name=params['pet_name'])
+                                results = __self__.pet_schamas.dump(petListWithPagination)
+                                return jsonify(results)
+                        except:
+                            try:
+                                if(params['record_type']):
+                                    petListWithPagination =__self__.dbSession.query(Pets).filter_by(record_type=params['record_type'])
+                                    results = __self__.pet_schamas.dump(petListWithPagination.offset(offset).limit(params['PerPage']).all())
+                                    return jsonify(results)
+                            except:
+                                try:
+                                    if(params['pet_breed']):
+                                        petListWithPagination =__self__.dbSession.query(Pets).filter_by(pet_breed=params['pet_breed'])
+                                        results = __self__.pet_schamas.dump(petListWithPagination.offset(offset).limit(params['PerPage']).all())
+                                        return jsonify(results)
+                                except:
+                                    results = __self__.pet_schamas.dump(petListWithPagination)
+                                    return  jsonify(results)
+            except:
+                results = __self__.pet_schamas.dump(pet_list)
+                return  jsonify(results)
     
     def getPetDetailByPetID(__self__,id):
         pet = __self__.dbSession.query(Pets).get(id)
