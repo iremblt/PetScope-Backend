@@ -21,7 +21,7 @@ class Pets(db.Model):
     __tablename__ = 'Pets'
     pet_id = db.Column(db.Integer, primary_key=True)
     record_type = db.Column(db.Integer, nullable=False) #0 lost, 1 found
-    date_time = db.Column(db.String(500), nullable=False) #convert to datetime
+    date_time = db.Column(db.DateTime, nullable=False) #convert to datetime
     pet_name = db.Column(db.String(500), nullable=False)
     pet_breed = db.Column(db.String(500), nullable=False)
     pet_color = db.Column(db.String(500), nullable=True)
