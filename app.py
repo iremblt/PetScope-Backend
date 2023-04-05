@@ -23,19 +23,9 @@ def home():
 def petList():
     try:
         if(getattr(request, 'json', None)):
-            # if(getattr(getattr(request, 'json', None), 'pet_name', None)):
-            #     print(request.json['pet_name'])
-            try:
-                if(request.json['date_time']):  
-                    petList = petServices.getPetListWithParams(params={
-                        'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
-                        'date_time': request.json['date_time']
-                        })
-                    return petList
-            except:
                 try:
                     if(request.json['pet_name']):  
-                        petList = petServices.getPetListWithParams(params={
+                        petList = petServices.searchPetListByName(params={
                             'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
                             'pet_name': request.json['pet_name']
                             })
@@ -43,8 +33,7 @@ def petList():
                 except:
                     try:
                         if(request.json['record_type']):
-                            print('here')
-                            petList = petServices.getPetListWithParams(params={
+                            petList = petServices.filterByRecordType(params={
                                 'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
                                 'record_type': request.json['record_type']
                                 })
@@ -52,23 +41,54 @@ def petList():
                     except:
                         try:
                             if(request.json['pet_breed']):  
-                                petList = petServices.getPetListWithParams(params={
+                                petList = petServices.filterByPetBreed(params={
                                     'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
                                     'pet_breed': request.json['pet_breed']
                                     })
                                 return petList
                         except:
-                            petList = petServices.getPetListWithParams(params={
-                                'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage']
-                                })
-                            return petList
+                            try:
+                                if(request.json['pet_lost_location']):
+                                    petList = petServices.filterByPetLocation(params={
+                                        'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                                        'pet_lost_location': request.json['pet_lost_location']
+                                        })
+                                    return petList
+                            except:
+                                try:
+                                    if(request.json['pet_age']):
+                                        petList = petServices.filterByPetAge(params={
+                                            'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                                            'pet_age': request.json['pet_age']
+                                            })
+                                        return petList
+                                except:
+                                    try:
+                                        if(request.json['pet_color']):
+                                            petList = petServices.filterByPetColor(params={
+                                            'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                                            'pet_color': request.json['pet_color']
+                                            })
+                                            return petList
+                                    except:
+                                        try:
+                                            if(request.json['pet_gender']):
+                                                petList = petServices.filterByPetGender(params={
+                                                'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage'],
+                                                'pet_gender': request.json['pet_gender']
+                                                })
+                                                return petList
+                                        except:
+                                            petList = petServices.getPetListWithPagination(params={
+                                            'PageSize': request.json['PageSize'],'PerPage':request.json['PerPage']
+                                            })
+                                            return petList
     except:
         petList = petServices.getPetList()
         return petList
 
 @app.route('/Pet/List', methods=(['GET']))
 def petListWithSearchByName():
-    print(request.json['pet_name'])
     petList = petServices.getPetList()
     return petList
 
@@ -116,6 +136,22 @@ def addNewPet():
     pet_lost_location= request.json['pet_lost_location']
     created_id= request.json['created_id']
     pet = petServices.createPet(record_type,date_time,pet_name,pet_breed,pet_color,pet_age,pet_gender,pet_image,pet_details,pet_lost_location,created_id)
+    return pet
+
+@app.route('/Pet/Recommendation', methods=(['POST']))
+def recommendPet():
+    record_type = request.json['record_type']
+    date_time = request.json['date_time']
+    pet_name= request.json['pet_name'] or None
+    pet_breed= request.json['pet_breed']
+    pet_color= request.json['pet_color'] or None
+    pet_age= request.json['pet_age'] or None
+    pet_gender= request.json['pet_gender'] or None
+    pet_image= request.json['pet_image']
+    pet_details= request.json['pet_details'] or None
+    pet_lost_location= request.json['pet_lost_location']
+    created_id= request.json['created_id']
+    pet = petServices.recommendPet(record_type,date_time,pet_name,pet_breed,pet_color,pet_age,pet_gender,pet_image,pet_details,pet_lost_location,created_id)
     return pet
 
 @app.route('/User/List', methods=(['GET']))
